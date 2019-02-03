@@ -1,0 +1,24 @@
+
+curl -s 'http://localhost:8080/ignite?cmd=version' | jq
+
+# cluster status
+
+curl -s 'http://localhost:8080/ignite?cmd=activate' | jq
+
+curl -s 'http://localhost:8080/ignite?cmd=currentstate' | jq
+
+curl -s 'http://localhost:8080/ignite?cmd=top' | jq
+
+# cache stuff
+
+curl -s 'http://localhost:8080/ignite?cmd=getorcreate&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:8080/ignite?cmd=put&cacheName=myPartionedCache' -X POST -H 'Content-Type: application/x-www-form-urlencoded' -d 'key=testKey&val=testValue' | jq
+
+curl -s 'http://localhost:8080/ignite?cmd=put&key=1&val=2018-01-01&cacheName=myPartionedCache&keyType=int&valueType=date' | jq
+
+curl -s 'http://localhost:8080/ignite?cmd=conkey&key=testKey&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:8080/ignite?cmd=get&key=testKey&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:8080/ignite?cmd=get&key=1&keyType=int&cacheName=myPartionedCache' | jq
