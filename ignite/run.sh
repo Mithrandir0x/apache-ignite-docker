@@ -1,5 +1,11 @@
 #!/bin/bash
 
+for lib in `cat $IGNITE_HOME/optional_libs`; do
+  echo "Copying [$IGNITE_HOME/libs/optional/$lib] into [$IGNITE_HOME/libs/]"
+  cp -r $IGNITE_HOME/libs/optional/"$lib" \
+      $IGNITE_HOME/libs/
+done
+
 if [ ! -z "$OPTION_LIBS" ]; then
   IFS=, LIBS_LIST=("$OPTION_LIBS")
 
@@ -28,6 +34,3 @@ if [ -z $CONFIG_URI ]; then
 else
   $IGNITE_HOME/bin/ignite.sh $QUIET $CONFIG_URI
 fi
-
-LIBS_LIST=("$OPTION_LIBS")
-for lib in ${LIBS_LIST[@]}; do echo $lib; done
