@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+    <property name="discoverySpi">
+      <bean class="org.apache.ignite.spi.discovery.zk.ZookeeperDiscoverySpi">
+        <property name="zkConnectionString" value="zk:2181"/>
+        <property name="sessionTimeout" value="30000"/>
+        <property name="zkRootPath" value="/apacheIgnite"/>
+        <property name="joinTimeout" value="10000"/>
+      </bean>
+    </property>
+    <property name="dataStorageConfiguration">
+      <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+        <property name="defaultDataRegionConfiguration">
+          <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+            <property name="name" value="persistent_dataregion"/>
+            <property name="persistenceEnabled" value="true"/>
+          </bean>
+        </property>
+      </bean>
+    </property>
+  </bean>
+</beans>

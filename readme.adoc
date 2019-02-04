@@ -45,3 +45,73 @@ curl -s 'http://localhost:18082/ignite?cmd=size&cacheName=myPartionedCache' | jq
 
 curl -s 'http://localhost:18081/ignite?cmd=cache&cacheName=myPartionedCache' | jq
 ----
+
+# persistent distributed cache stuff
+
+The following query will fail due to cluster not being active:
+
+[source,bash]
+----
+curl -s 'http://localhost:18081/ignite?cmd=getorcreate&cacheName=myPartionedCache' | jq
+----
+
+The following error is thrown:
+
+[source]
+----
+data01_1  | [08:42:41,922][SEVERE][rest-#52][GridCacheCommandHandler] Failed to execute cache command: GridRestCacheRequest [cacheName=myPartionedCache, templateName=null, cfg=null, cacheFlags=0, ttl=null, super=GridRestRequest [destId=null, clientId=null, addr=/172.18.0.1:49994, cmd=GET_OR_CREATE_CACHE, authCtx=null]]
+data01_1  | class org.apache.ignite.IgniteException: Can not perform the operation because the cluster is inactive. Note, that the cluster is considered inactive by default if Ignite Persistent Store is used to let all the nodes join the cluster. To activate the cluster call Ignite.active(true).
+data01_1  |     at org.apache.ignite.internal.IgniteKernal.checkClusterState(IgniteKernal.java:3905)
+data01_1  |     at org.apache.ignite.internal.IgniteKernal.getOrCreateCacheAsync(IgniteKernal.java:3331)
+data01_1  |     at org.apache.ignite.internal.processors.rest.handlers.cache.GridCacheCommandHandler.handleAsync(GridCacheCommandHandler.java:417)
+data01_1  |     at org.apache.ignite.internal.processors.rest.GridRestProcessor.handleRequest(GridRestProcessor.java:318)
+data01_1  |     at org.apache.ignite.internal.processors.rest.GridRestProcessor.access$100(GridRestProcessor.java:99)
+data01_1  |     at org.apache.ignite.internal.processors.rest.GridRestProcessor$2.body(GridRestProcessor.java:174)
+data01_1  |     at org.apache.ignite.internal.util.worker.GridWorker.run(GridWorker.java:120)
+data01_1  |     at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+data01_1  |     at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+data01_1  |     at java.lang.Thread.run(Thread.java:748)
+data01_1  | [08:42:41,925][SEVERE][rest-#52][GridRestProcessor] Failed to handle request: GET_OR_CREATE_CACHE
+data01_1  | class org.apache.ignite.IgniteCheckedException: Can not perform the operation because the cluster is inactive. Note, that the cluster is considered inactive by default if Ignite Persistent Store is used to let all the nodes join the cluster. To activate the cluster call Ignite.active(true).
+data01_1  |     at org.apache.ignite.internal.util.IgniteUtils.cast(IgniteUtils.java:7428)
+data01_1  |     at org.apache.ignite.internal.util.future.GridFinishedFuture.get(GridFinishedFuture.java:102)
+data01_1  |     at org.apache.ignite.internal.processors.rest.GridRestProcessor$3.apply(GridRestProcessor.java:331)
+data01_1  |     at org.apache.ignite.internal.processors.rest.GridRestProcessor$3.apply(GridRestProcessor.java:324)
+data01_1  |     at org.apache.ignite.internal.util.future.GridFinishedFuture.chain(GridFinishedFuture.java:132)
+data01_1  |     at org.apache.ignite.internal.processors.rest.GridRestProcessor.handleRequest(GridRestProcessor.java:324)
+data01_1  |     at org.apache.ignite.internal.processors.rest.GridRestProcessor.access$100(GridRestProcessor.java:99)
+data01_1  |     at org.apache.ignite.internal.processors.rest.GridRestProcessor$2.body(GridRestProcessor.java:174)
+data01_1  |     at org.apache.ignite.internal.util.worker.GridWorker.run(GridWorker.java:120)
+data01_1  |     at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+data01_1  |     at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+data01_1  |     at java.lang.Thread.run(Thread.java:748)
+data01_1  | Caused by: class org.apache.ignite.IgniteException: Can not perform the operation because the cluster is inactive. Note, that the cluster is considered inactive by default if Ignite Persistent Store is used to let all the nodes join the cluster. To activate the cluster call Ignite.active(true).
+data01_1  |     at org.apache.ignite.internal.IgniteKernal.checkClusterState(IgniteKernal.java:3905)
+data01_1  |     at org.apache.ignite.internal.IgniteKernal.getOrCreateCacheAsync(IgniteKernal.java:3331)
+data01_1  |     at org.apache.ignite.internal.processors.rest.handlers.cache.GridCacheCommandHandler.handleAsync(GridCacheCommandHandler.java:417)
+data01_1  |     at org.apache.ignite.internal.processors.rest.GridRestProcessor.handleRequest(GridRestProcessor.java:318)
+data01_1  |     ... 6 more
+----
+
+To avoid it, it is require to launch an activate command to any of the cluster members:
+
+[source,bash]
+----
+curl -s 'http://localhost:18081/ignite?cmd=activate' | jq
+----
+
+[source,bash]
+----
+curl -s 'http://localhost:18081/ignite?cmd=getorcreate&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:18081/ignite?cmd=put&key=1&val=2018-01-01&cacheName=myPartionedCache&keyType=int&valueType=date' | jq
+
+curl -s 'http://localhost:18082/ignite?cmd=get&key=1&keyType=int&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:18082/ignite?cmd=metadata&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:18082/ignite?cmd=size&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:18081/ignite?cmd=cache&cacheName=myPartionedCache' | jq
+----
+

@@ -30,8 +30,10 @@ services:
     depends_on:
       - nginx
       - zk
-    environment:
-      CONFIG_URI: http://nginx/zk-cache.xml
+    env_file:
+      - .env
+    volumes:
+      - ./.data/ignite/data01:/opt/ignite/apache-ignite/work
 
   data02:
     build: ./ignite
@@ -40,5 +42,7 @@ services:
     depends_on:
       - nginx
       - zk
-    environment:
-      CONFIG_URI: http://nginx/zk-cache.xml
+    env_file:
+      - .env
+    volumes:
+      - ./.data/ignite/data02:/opt/ignite/apache-ignite/work
