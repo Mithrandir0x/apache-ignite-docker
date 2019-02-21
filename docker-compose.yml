@@ -1,7 +1,7 @@
 
 version: "3"
 
-services:  
+services:
 
   nginx:
     image: nginx
@@ -46,3 +46,27 @@ services:
       - .env
     volumes:
       - ./.data/ignite/data02:/opt/ignite/apache-ignite/work
+
+  data03:
+    build: ./ignite
+    ports:
+      - 18083:8080
+    depends_on:
+      - nginx
+      - zk
+    env_file:
+      - .env
+    volumes:
+      - ./.data/ignite/data03:/opt/ignite/apache-ignite/work
+
+  data04:
+    build: ./ignite
+    ports:
+      - 18084:8080
+    depends_on:
+      - nginx
+      - zk
+    env_file:
+      - .env
+    volumes:
+      - ./.data/ignite/data04:/opt/ignite/apache-ignite/work

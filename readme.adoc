@@ -110,8 +110,32 @@ curl -s 'http://localhost:18082/ignite?cmd=get&key=1&keyType=int&cacheName=myPar
 
 curl -s 'http://localhost:18082/ignite?cmd=metadata&cacheName=myPartionedCache' | jq
 
+curl -s 'http://localhost:18082/ignite?cmd=metadata&cacheName=myReplicatedCache' | jq
+
 curl -s 'http://localhost:18082/ignite?cmd=size&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:18082/ignite?cmd=size&cacheName=myReplicatedCache' | jq
 
 curl -s 'http://localhost:18081/ignite?cmd=cache&cacheName=myPartionedCache' | jq
 ----
 
+# cache tests
+
+data:
+
+[source,bash]
+----
+curl -s 'http://localhost:18081/ignite?cmd=put&key=client@5ab14d949422a569dcfc90f1|term@movistar.com|domain@movistar.com&val=true&cacheName=myPartionedCache&keyType=string&valueType=boolean' | jq
+curl -s 'http://localhost:18081/ignite?cmd=put&key=tld@com&val=true&cacheName=myPartionedCache&keyType=string&valueType=boolean' | jq
+----
+
+gets:
+
+[source,bash]
+----
+curl -s 'http://localhost:18084/ignite?cmd=getall&k1=client@5ab14d949422a569dcfc90f1|term@movistar.com|domain@movistar.com&k2=client@5ab14d949422a569dcfc90f1|term@movistar.com&k3=client@5ab14d949422a569dcfc90f1&k4=tld@com&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:18084/ignite?cmd=getall&k1=client@5ab14d949422a569dcfc90f1|term@movistar.com|domain@movistar.com&k2=client@5ab14d949422a569dcfc90f1|term@movistar.com&k3=client@5ab14d949422a569dcfc90f1&k4=tld@es&cacheName=myPartionedCache' | jq
+
+curl -s 'http://localhost:18084/ignite?cmd=getall&k1=client@5ab14d949422a569dcfc90f1|term@movistar.com|domain@movistar.es&k2=client@5ab14d949422a569dcfc90f1|term@movistar.com&k3=client@5ab14d949422a569dcfc90f1&k4=tld@es&cacheName=myPartionedCache' | jq
+----
